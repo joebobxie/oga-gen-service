@@ -1,4 +1,4 @@
-package com.gen.service.module.code.db.vo;
+package com.gen.service.module.db.vo;
 
 import com.gen.service.model.vo.BaseVO;
 import io.swagger.annotations.ApiModel;

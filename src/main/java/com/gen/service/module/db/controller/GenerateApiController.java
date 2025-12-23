@@ -1,4 +1,4 @@
-package com.gen.service.module.code.db.controller;
+package com.gen.service.module.db.controller;
 
 import com.gen.service.common.controller.BaseController;
 import io.swagger.annotations.Api;

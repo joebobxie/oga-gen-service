@@ -1,8 +1,8 @@
-package com.gen.service.module.code.db.service.impl;
+package com.gen.service.module.db.service.impl;
 
-import com.gen.service.module.code.db.dto.DbConfigDTO;
-import com.gen.service.module.code.db.service.DBService;
-import com.gen.service.module.code.db.vo.DbVO;
+import com.gen.service.module.db.dto.DbConfigDTO;
+import com.gen.service.module.db.service.DBService;
+import com.gen.service.module.db.vo.DbVO;
 import com.gen.service.utility.JdbcHelper;
 import org.springframework.stereotype.Service;
 

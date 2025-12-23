@@ -1,7 +1,7 @@
-package com.gen.service.module.code.db.service;
+package com.gen.service.module.db.service;
 
-import com.gen.service.module.code.db.dto.DbConfigDTO;
-import com.gen.service.module.code.db.vo.DbVO;
+import com.gen.service.module.db.dto.DbConfigDTO;
+import com.gen.service.module.db.vo.DbVO;
 
 import java.util.List;
 

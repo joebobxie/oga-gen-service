@@ -1,6 +1,6 @@
 package com.gen.service.utility;
 
-import com.gen.service.module.code.db.dto.DbConfigDTO;
+import com.gen.service.module.db.dto.DbConfigDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;

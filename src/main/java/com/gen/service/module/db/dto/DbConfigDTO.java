@@ -1,4 +1,4 @@
-package com.gen.service.module.code.db.dto;
+package com.gen.service.module.db.dto;
 
 import com.gen.service.model.dto.BaseDTO;
 import io.swagger.annotations.ApiModel;
