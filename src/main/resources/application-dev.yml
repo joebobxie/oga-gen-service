@@ -1,0 +1,3 @@
+#日志路径配置
+logging:
+  path: /opt/logs/${spring.application.name}

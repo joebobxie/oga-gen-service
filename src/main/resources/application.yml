@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: oga-gen-service
+  profiles:
+    active: dev
+server:
+  port: 8899
+  tomcat:
+    uri-encoding: UTF-8
