@@ -1,19 +1,19 @@
 package com.gen.service.module.db.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.gen.service.common.exception.ApiError;
 import com.gen.service.common.exception.ApiRest;
 import com.gen.service.model.vo.BaseStringVO;
 import com.gen.service.module.db.dto.ConfigDTO;
 import com.gen.service.module.db.dto.DbConfigDTO;
 import com.gen.service.module.db.dto.DbStructureDTO;
+import com.gen.service.module.db.dto.GenerateDTO;
 import com.gen.service.module.db.service.DBService;
 import com.gen.service.module.db.vo.*;
 import com.gen.service.utility.JavaTemplate;
 import com.gen.service.utility.JdbcHelper;
 import com.gen.service.utility.StringUti;
+import com.gen.service.utility.ThymeleafHelper;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
@@ -188,20 +188,10 @@ public class DBServiceImpl implements DBService {
         List<String> list = Lists.newArrayList();
         for (String value : name.split("_")) {
             if (!StringUtils.isEmpty(value)) {
-                list.add(this.firstUpperCase(value));
+                list.add(StringUti.firstUpperCase(value));
             }
         }
         return list;
-    }
-
-    /**
-     * first word to the upper case
-     *
-     * @param name Table Name
-     */
-    private String firstUpperCase(String name) {
-        name = name.substring(0, 1).toUpperCase() + name.substring(1);
-        return name;
     }
 
     /**
@@ -354,6 +344,7 @@ public class DBServiceImpl implements DBService {
     /**
      * Database HTML
      */
+    @Override
     public ApiRest<BaseStringVO> dbDocument(DbStructureDTO dto) {
         BaseStringVO baseStringVO = new BaseStringVO();
         DbStructureVO db = this.dbStructure(dto);
@@ -375,17 +366,18 @@ public class DBServiceImpl implements DBService {
                         String subModule = getModule(sub.getName());
                         if (subModule.equals(module)) {
                             right.add(String.format("<div class=\"block\" id=\"%s\">", sub.getName()));
-                            right.add(String.format("<h3>%s %s</h3>", sub.getDescribe(), sub.getName()));
+                            right.add(String.format("<small>%s</small>", sub.getName()));
+                            right.add(String.format("<h3>%s</h3>", sub.getDescribe()));
                             right.add("<table>");
                             right.add("<tr>");
-                            right.add("<td>字段名</td>");
-                            right.add("<td>JAVA字段</td>");
-                            right.add("<td>类型</td>");
-                            right.add("<td>长度</td>");
-                            right.add("<td>说明</td>");
-                            right.add("<td>非空</td>");
-                            right.add("<td>自增</td>");
-                            right.add("<td>主键</td>");
+                            right.add("<td>Filed</td>");
+                            right.add("<td>JAVA Variable</td>");
+                            right.add("<td>Filed Type</td>");
+                            right.add("<td>Length</td>");
+                            right.add("<td>Comment</td>");
+                            right.add("<td>Not Null</td>");
+                            right.add("<td>Auto Increment</td>");
+                            right.add("<td>Key</td>");
                             right.add("</tr>");
                             //ㄨ
                             for (FiledVO field : sub.getChildren()) {
@@ -404,7 +396,7 @@ public class DBServiceImpl implements DBService {
                             right.add("</table>");
                             right.add("</div>");
 
-                            left.add(String.format("<dd rel=\"%s\">%s %s</dd>", sub.getName(), sub.getDescribe(), sub.getName()));
+                            left.add(String.format("<dd rel=\"%s\">%s</dd>", sub.getName(), sub.getDescribe()));
                         }
 
                     }
@@ -459,5 +451,25 @@ public class DBServiceImpl implements DBService {
             System.out.printf("read file error：%s%n", fileName);
         }
         return sb.toString();
+    }
+
+    /**
+     * Code Source
+     */
+    @Override
+    public ApiRest<BaseStringVO> codeSource(GenerateDTO dto) {
+        ApiRest<BaseStringVO> resultBase = new ApiRest<>();
+        BaseStringVO baseString = new BaseStringVO();
+        String html = "";
+        if (dto.getCodeType().equals("file")) {
+            html = "";
+        } else {
+            html = ThymeleafHelper.generateTemplate(dto, dto.getCodeType());
+        }
+        baseString.setContent(html);
+        resultBase.setData(baseString);
+        resultBase.setCode(ApiError.Success.code);
+        resultBase.setMessage(ApiError.Success.message);
+        return resultBase;
     }
 }

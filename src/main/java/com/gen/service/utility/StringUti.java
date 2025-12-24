@@ -54,4 +54,14 @@ public class StringUti {
     {
         return dateTimesFormat.format(new Date());
     }
+
+    /**
+     * first word to the upper case
+     *
+     * @param name Table Name
+     */
+    public static String firstUpperCase(String name) {
+        name = name.substring(0, 1).toUpperCase() + name.substring(1);
+        return name;
+    }
 }

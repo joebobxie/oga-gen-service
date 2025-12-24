@@ -4,6 +4,7 @@ import com.gen.service.common.controller.BaseController;
 import com.gen.service.common.exception.ApiRest;
 import com.gen.service.model.vo.BaseStringVO;
 import com.gen.service.module.db.dto.DbStructureDTO;
+import com.gen.service.module.db.dto.GenerateDTO;
 import com.gen.service.module.db.service.DBService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -33,5 +34,14 @@ public class GenerateApiController extends BaseController {
     @RequestMapping(value = "/structure", method = { RequestMethod.POST})
     public ApiRest<BaseStringVO> getDbHTML(@RequestBody DbStructureDTO dto) {
         return dbService.dbDocument(dto);
+    }
+
+    /**
+     * Code Source
+     */
+    @ApiOperation(value = "Code Source")
+    @RequestMapping(value = "/source", method = { RequestMethod.POST})
+    public ApiRest<BaseStringVO> getCodeSource(@RequestBody GenerateDTO dto) {
+        return dbService.codeSource(dto);
     }
 }

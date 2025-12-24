@@ -4,6 +4,7 @@ import com.gen.service.common.exception.ApiRest;
 import com.gen.service.model.vo.BaseStringVO;
 import com.gen.service.module.db.dto.DbConfigDTO;
 import com.gen.service.module.db.dto.DbStructureDTO;
+import com.gen.service.module.db.dto.GenerateDTO;
 import com.gen.service.module.db.vo.DbStructureVO;
 import com.gen.service.module.db.vo.DbVO;
 
@@ -28,4 +29,9 @@ public interface DBService {
      * Database HTML
      */
     ApiRest<BaseStringVO> dbDocument(DbStructureDTO dto);
+
+    /**
+     * Code Source
+     */
+    ApiRest<BaseStringVO> codeSource(GenerateDTO dto);
 }
