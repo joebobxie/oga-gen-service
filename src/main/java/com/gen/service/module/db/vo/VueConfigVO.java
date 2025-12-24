@@ -66,10 +66,10 @@ public class VueConfigVO extends BaseVO {
     private String prefix;
 
     /**
-     * Resource File Path
+     * Mapper File Path
      */
-    @ApiModelProperty(value = "Resource File Path")
-    private String resourcePath;
+    @ApiModelProperty(value = "Mapper File Path")
+    private String mapperPath;
 
     /**
      * Router Name

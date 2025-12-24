@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="File Describe", description="File Describe")
+@ApiModel(value="Filed", description="Filed Describe")
 public class FiledVO extends BaseVO {
 
 
@@ -88,7 +88,7 @@ public class FiledVO extends BaseVO {
      * Filed Nullable
      */
     @ApiModelProperty(value = "Filed Nullable")
-    private String nullable;
+    private Integer nullable;
 
     /**
      * Primary Key
