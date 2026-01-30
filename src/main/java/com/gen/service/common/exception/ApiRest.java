@@ -36,7 +36,7 @@ public class ApiRest<T> {
      *
      */
     public boolean isSuccess() {
-        return code.equals(0);
+        return code.equals(1);
     }
 
     /**

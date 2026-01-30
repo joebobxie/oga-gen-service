@@ -1,0 +1,202 @@
+<template>
+  <fox-layout-main
+    :loading="pageLoading"
+    :offset="200"
+    google-style
+  >
+      <fox-form
+        :model="entity"
+        :rules="formRules"
+        ref="update"
+      >
+        <fox-section>
+          [# th:each="item,stat: ${table.children}"][# th:if="${item.primary == 0}"]
+          <fox-form-item prop="[(${item.javaName})]">
+            <fox-input
+              v-model="entity.[(${item.javaName})]"
+              shrink
+              :placeholder="$t('[(${table.config.catalog})].[(${table.config.i18n})].entity.[(${item.javaName})].label')"
+              :description="$t('[(${table.config.catalog})].[(${table.config.i18n})].entity.[(${item.javaName})].placeholder')"
+            ></fox-input>
+          </fox-form-item>
+          [/][/]
+        </fox-section>
+      </fox-form>
+      <fox-unsaved
+        :unsaved.sync="unsaved"
+        :loading="loading"
+        @confirmed="formValidation"
+      >
+      </fox-unsaved>
+  </fox-layout-main>
+</template>
+
+<script>
+import extend from '@/plugins/page/unsaved'
+import {
+  fetch[(${table.config.prefix})]Detail,
+  fetch[(${table.config.prefix})]Update,
+  fetch[(${table.config.prefix})]Delete
+} from '@/plugins/api/[(${table.config.catalog})]'
+
+export default {
+  name: '[(${table.config.prefix})]Update',
+  extends: extend,
+  data () {
+    return {
+      entity: {
+        [# th:each="item,stat: ${table.children}"][# th:if="${item.primary == 0}"]
+        [(${item.javaName})]: [(${item.defaultValue})][# th:if="${not stat.last}" th:text="','" /][/][/]
+      },
+      formRules: {
+        [# th:each="item,stat: ${table.children}"][# th:if="${item.primary == 0}"]
+        [(${item.javaName})]: [
+          {
+            required: true,
+            message: this.$t('[(${table.config.catalog})].[(${table.config.i18n})].entity.[(${item.javaName})].required'),
+            trigger: 'blur'
+          }
+        ][# th:if="${not stat.last}" th:text="','" /][/][/]
+      }
+    }
+  },
+  watch: {
+    entity: {
+      deep: true,
+      handler () {
+        this.unsaved = true
+      }
+    }
+  },
+  created () {
+    if (this.id) {
+      this.getDetail()
+    } else {
+      this.pageValid()
+    }
+  },
+  methods: {
+    /**
+     * Previous
+     */
+    previous () {
+      this.redirectURL('/[(${table.config.catalog})]/[(${table.config.path})]')
+    },
+    /**
+     * Form Validation
+     */
+    formValidation () {
+      this.formValidate('update', (valid, fields) => {
+        if (valid) {
+          this.loading = true
+          if (this.id) {
+            this.update[(${table.config.fun})]()
+          } else {
+            this.add[(${table.config.fun})]()
+          }
+        } else {
+          this.unverified(fields)
+        }
+      })
+    },
+    /**
+     * GET DETAIL DATE
+     */
+    getDetail () {
+      fetch[(${table.config.prefix})]Detail({
+        id: this.id
+      })
+        .then((result) => {
+          this.pageValid()
+          this.resultMessage(result, (success) => {
+            if (success) {
+              this.entity = result.data
+              this.$nextTick(() => {
+                this.unsaved = false
+              })
+            }
+          })
+        })
+        .catch(error => {
+          this.pageInvalid(error)
+        })
+    },
+    /**
+     * ADD
+     */
+    add[(${table.config.fun})] () {
+      fetch[(${table.config.prefix})]Update(this.entity)
+        .then((result) => {
+          result.options = {
+            action: this.actionType.addition,
+            formName: 'update'
+          }
+          this.resultMessage(result, (success) => {
+            if (success) {
+              this.previous()
+            }
+          })
+        })
+        .catch(error => {
+          this.networkMistake(error)
+        })
+    },
+    /**
+     * UPDATE
+     */
+    update[(${table.config.fun})] () {
+      fetch[(${table.config.prefix})]Update(this.entity)
+        .then((result) => {
+          result.options = {
+            formName: 'update',
+            action: this.actionType.update
+          }
+          this.resultMessage(result, (success) => {
+            if (success) {
+              // this.previous()
+            }
+          })
+        })
+        .catch(error => {
+          this.networkMistake(error)
+        })
+    },
+    /**
+     * DELETE
+     */
+    delete[(${table.config.fun})] () {
+      this.$confirm(this.$t('base.delete.subheading').toString(), this.$t('base.delete.heading').toString(), {
+        confirmButtonText: this.$t('base.operate.confirm'),
+        cancelButtonText: this.$t('base.operate.cancel'),
+        closeOnClickModal: false,
+        type: 'error',
+        beforeClose: (action, instance, done) => {
+          if (action === 'confirm') {
+            fetch[(${table.config.prefix})]Delete({
+              ids: [this.id]
+            })
+              .then((result) => {
+                result.options = {
+                  action: this.actionType.delete,
+                  url: '/[(${table.config.catalog})]/[(${table.config.path})]'
+                }
+                this.resultMessage(result, () => {
+                  done()
+                  instance.confirmButtonLoading = false
+                })
+              })
+              .catch(error => {
+                this.networkMistake(error)
+                done()
+                instance.confirmButtonLoading = false
+              })
+          } else {
+            instance.confirmButtonLoading = false
+            done()
+          }
+        }
+      })
+    }
+  }
+}
+</script>

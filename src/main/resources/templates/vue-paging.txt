@@ -1,0 +1,243 @@
+<template>
+  <fox-layout-main
+    :loading="pageLoading"
+    :offset="200"
+    :percentage="100"
+    google-style
+  >
+    <div class="neighbor fox-google-style percent-100" slot="header">
+      <div class="fox-page-content">
+        <div class="filter-params">
+          <div class="filter-params-element">
+            <fox-input
+              shrink
+              :placeholder="$t('base.placeholder.label')"
+              :description="$t('base.placeholder.search')"
+              v-model="searchConditions.keyword"
+              clearable
+              @clear="clearSearchCondition"
+            >
+              <el-button
+                slot="append"
+                icon="el-icon-search"
+                :loading="loading"
+                @click="getData(false)"
+              ></el-button>
+            </fox-input>
+          </div>
+          <div class="filter-params-element">
+            <el-button
+              icon="el-icon-plus"
+              type="primary"
+              plain
+              class="el-material-button"
+              @click="add[(${table.config.fun})]"
+            >
+            </el-button>
+          </div>
+          <div class="filter-params-element text-count">
+            <label class="text-secondary mr-2">
+              {{$t('total')}}
+            </label>
+            <label class="text-primary">
+              {{pagingOptions.recordCount}}
+            </label>
+          </div>
+          <div class="filter-params-element">
+          </div>
+        </div>
+      </div>
+    </div>
+    <fox-paging-table
+        :columns="dataConfig.columns"
+        :actions="dataConfig.actions"
+        :dataset="pagingOptions.dataset"
+        :loading="tableOptions.loading"
+        :first-loading="pagingOptions.firstLoading"
+        :empty="dataConfig.empty"
+        :page-index.sync="pagingOptions.pageIndex"
+        :page-size.sync="pagingOptions.pageSize"
+        :record-count="pagingOptions.recordCount"
+        :rows-class-name="dataConfig.rowsClassName"
+        @paging="getData"
+    >
+    </fox-paging-table>
+  </fox-layout-main>
+</template>
+
+<script>
+import extend from '@/plugins/page/paging'
+import {
+  fetch[(${table.config.prefix})]Paging,
+  fetch[(${table.config.prefix})]Delete
+} from '@/plugins/api/[(${table.config.catalog})]'
+
+export default {
+  name: '[(${table.config.prefix})]',
+  extends: extend,
+  data () {
+    return {
+      dataConfig: {
+        actions: {
+          rowClick: (row, column) => {
+            this.columnEvents(row, column)
+          },
+          delete: {
+            icon: 'el-icon-delete',
+            label: this.$t('base.delete.button'),
+            onClick: (rows) => {
+              this.delete[(${table.config.fun})](rows)
+            }
+          }
+        },
+        columns: [[# th:each="item,stat: ${table.children}"]
+          [# th:if="${item.primary == 0}"]{
+            prop: '[# th:text="${item.javaName}" /]',
+            label: this.$t('[(${table.config.catalog})].[(${table.config.i18n})].tableHeader.[# th:text="${item.javaName}" /]')
+          }[# th:if="${not stat.last}" th:text="','" /][/]
+        [/]],
+        /**
+         * Data is empty
+         */
+        empty: {
+          content: this.$t('[(${table.config.catalog})].[(${table.config.i18n})].empty.content'),
+          buttonLabel: this.$t('[(${table.config.catalog})].[(${table.config.i18n})].empty.buttonLabel'),
+          onClick: () => {
+            this.add[(${table.config.fun})]()
+          }
+        },
+        /**
+         * Row Highlight Class
+         * @param row Row data
+         */
+        rowsClassName: (row) => {
+          // return row.state === 0 ? 'row-text-enable' : ''
+          return ''
+        }
+      },
+      searchConditions: {
+        ...this.searchConditions
+      }
+    }
+  },
+  watch: {
+    searchConditions: {
+      deep: true,
+      handler () {
+        this.getData(true)
+      }
+    }
+  },
+  created () {
+    this.pagingCache((success) => {
+      this.getData(success)
+    })
+  },
+  methods: {
+    /**
+     * Row click event
+     * @param row       Row data
+     * @param column    Column data
+     */
+    columnEvents (row, column) {
+      this.update[(${table.config.fun})](row)
+    },
+    /**
+     * Clear Search Condition
+     */
+    clearSearchCondition () {
+      this.clearCondition(() => {
+        this.getData(true)
+      })
+    },
+    /**
+     * Paging data
+     * @param first First Load
+     */
+    getData (first) {
+      this.tableOptions.loading = true
+      this.pagingOptions.firstLoading = first
+      fetch[(${table.config.prefix})]Paging({
+        current: this.pagingOptions.pageIndex,
+        size: this.pagingOptions.pageSize,
+        params: {}
+      })
+        .then(result => {
+          this.pageValid()
+          this.resultMessage(result, (success) => {
+            if (success) {
+              this.pagingOptions.recordCount = result.data.total
+              this.pagingOptions.dataset = result.data['records']
+              this.tableOptions.loading = false
+              if (result.data.records.length > 0) {
+                this.pagingOptions.firstLoading = !first
+              }
+            }
+          })
+        })
+        .catch(error => {
+          this.pageInvalid()
+          this.networkMistake(error)
+        })
+    },
+    /**
+     * Add Redirect
+     */
+    add[(${table.config.fun})] () {
+      this.redirectURL('/[(${table.config.catalog})]/[(${table.config.path})]/add')
+    },
+    /**
+     * Edit Redirect
+     */
+    update[(${table.config.fun})] (row) {
+      this.redirectURL(`/[(${table.config.catalog})]/[(${table.config.path})]/update/${row.id}`)
+    },
+    /**
+     * DELETE
+     */
+    delete[(${table.config.fun})] (rows) {
+      const ids = []
+      rows.forEach((o) => {
+        ids.push(o.id)
+      })
+      this.$confirm(this.$t('base.delete.multiple').toString().replace('{0}', ids.length.toString()),
+        this.$t('base.delete.heading').toString(), {
+          confirmButtonText: this.$t('base.operate.confirm'),
+          cancelButtonText: this.$t('base.operate.cancel'),
+          closeOnClickModal: false,
+          type: 'error',
+          beforeClose: (action, instance, done) => {
+            if (action === 'confirm') {
+              fetch[(${table.config.prefix})]Delete({
+                ids: ids
+              })
+                .then(result => {
+                  result.options = {
+                    action: this.actionType.delete
+                  }
+                  this.resultMessage(result, (success) => {
+                    done()
+                    instance.confirmButtonLoading = false
+                    if (success) {
+                      this.getData(true)
+                    }
+                  })
+                })
+                .catch(error => {
+                  this.networkMistake(error)
+                  done()
+                  instance.confirmButtonLoading = false
+                })
+            } else {
+              instance.confirmButtonLoading = false
+              done()
+            }
+          }
+        })
+    }
+  }
+}
+</script>
+
+<style lang="scss">
+</style>

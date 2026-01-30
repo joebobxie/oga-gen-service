@@ -2,6 +2,8 @@ package com.gen.service.module.db.service.impl;
 
 import com.gen.service.common.exception.ApiError;
 import com.gen.service.common.exception.ApiRest;
+import com.gen.service.common.io.DirectoryAction;
+import com.gen.service.common.io.FileAction;
 import com.gen.service.model.vo.BaseStringVO;
 import com.gen.service.module.db.dto.ConfigDTO;
 import com.gen.service.module.db.dto.DbConfigDTO;
@@ -9,6 +11,7 @@ import com.gen.service.module.db.dto.DbStructureDTO;
 import com.gen.service.module.db.dto.GenerateDTO;
 import com.gen.service.module.db.service.DBService;
 import com.gen.service.module.db.vo.*;
+import com.gen.service.module.generate.dto.GenerateFileDTO;
 import com.gen.service.utility.JavaTemplate;
 import com.gen.service.utility.JdbcHelper;
 import com.gen.service.utility.StringUti;
@@ -136,12 +139,12 @@ public class DBServiceImpl implements DBService {
 
                             FiledTypeVO filedTypeVO = this.jdbcToJavaType(filed.getDbType());
 
-                            if (!dbType.contains(filedTypeVO.getDbType())) {
+                            if (!StringUtils.isEmpty(filedTypeVO.getDbType()) && !dbType.contains(filedTypeVO.getDbType())) {
                                 dbType.add(filedTypeVO.getDbType());
                             }
                             filed.setFieldType(filedTypeVO.getName())
                                     .setDefaultValue(filedTypeVO.getValue())
-                                    .setLabel(String.format("%s(%s)", filed.getName(), filed.getColumnType()))
+                                    //.setLabel(String.format("%s(%s)", filed.getName(), filed.getColumnType()))
                                     .setIsLeaf(false);
 
                             fields.add(filed);
@@ -153,7 +156,7 @@ public class DBServiceImpl implements DBService {
                     }
                     tableVO.setDbType(dbType)
                             .setChildren(fields)
-                            .setVueConfig(this.getVueConfig(tableVO, dto.getConfig()));
+                            .setConfig(this.getVueConfig(tableVO, dto.getConfig()));
                     tables.add(tableVO);
                     tabs.add(tableName);
                 }
@@ -405,7 +408,7 @@ public class DBServiceImpl implements DBService {
                 }
 
             }
-            String html = this.getClasResources(JavaTemplate.db_structure);
+            String html = this.getClasResources(JavaTemplate.dbHtml);
             System.out.println("html" + html);
 
             html = html.replace("{menu}", StringUtils.join(left, ""))
@@ -462,6 +465,7 @@ public class DBServiceImpl implements DBService {
         BaseStringVO baseString = new BaseStringVO();
         String html = "";
         if (dto.getCodeType().equals("file")) {
+            generateFile(dto);
             html = "";
         } else {
             html = ThymeleafHelper.generateTemplate(dto, dto.getCodeType());
@@ -471,5 +475,46 @@ public class DBServiceImpl implements DBService {
         resultBase.setCode(ApiError.Success.code);
         resultBase.setMessage(ApiError.Success.message);
         return resultBase;
+    }
+
+    /**
+     * Generate File
+     */
+    private void generateFile(GenerateDTO dto) {
+        Map<String, GenerateFileDTO> map = new HashMap<>();
+        VueConfigVO config = dto.getTable().getConfig();
+        map.put("mapper-xml", new GenerateFileDTO().setPath(dto.getTable().getConfig().getMapperPath())
+                .setFileName(String.format("%s/%sMapper.xml", config.getMapperPath(), config.getPrefix()))
+        );
+        map.put("controller-java", new GenerateFileDTO().setPath(String.format("%s/controller/api", config.getJavaPath()))
+                .setFileName(String.format("%s/controller/api/%sApiController.java", config.getJavaPath(), config.getPrefix()))
+        );
+        map.put("dto-java",  new GenerateFileDTO().setPath(String.format("%s/dto", config.getJavaPath()))
+                .setFileName(String.format("%s/dto/%sDTO.java", config.getJavaPath(), config.getPrefix()))
+        );
+        map.put("vo-java", new GenerateFileDTO().setPath(String.format("%s/vo", config.getJavaPath()))
+                .setFileName(String.format("%s/vo/%sVO.java", config.getJavaPath(), config.getPrefix()))
+        );
+        map.put("entity-java", new GenerateFileDTO().setPath(String.format("%s/entity", config.getJavaPath()))
+                .setFileName(String.format("%s/entity/%sEntity.java", config.getJavaPath(), config.getPrefix()))
+        );
+        map.put("mapper-java", new GenerateFileDTO().setPath(String.format("%s/mapper", config.getJavaPath()))
+                .setFileName(String.format("%s/mapper/%sMapper.java", config.getJavaPath(), config.getPrefix()))
+        );
+        map.put("service-java", new GenerateFileDTO().setPath(String.format("%s/service", config.getJavaPath()))
+                .setFileName(String.format("%s/service/%sService.java", config.getJavaPath(), config.getPrefix()))
+        );
+        map.put("impl-service-java", new GenerateFileDTO().setPath(String.format("%s/service/impl", config.getJavaPath()))
+                .setFileName(String.format("%s/service/impl/%sServiceImpl.java", config.getJavaPath(), config.getPrefix()))
+        );
+
+        for (Map.Entry<String, GenerateFileDTO> entry : map.entrySet()) {
+            DirectoryAction.Create(entry.getValue().getPath());
+            dto.setCodeType(entry.getKey());
+            if (!DirectoryAction.Exist(entry.getValue().getFileName())) {
+                String html = ThymeleafHelper.generateTemplate(dto, dto.getCodeType());
+                FileAction.Write(entry.getValue().getFileName(), html);
+            }
+        }
     }
 }

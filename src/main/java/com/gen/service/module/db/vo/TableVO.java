@@ -57,7 +57,7 @@ public class TableVO extends BaseVO {
     /**
      * Vue Config
      */
-    private VueConfigVO vueConfig;
+    private VueConfigVO config;
 
     /**
      * Data Type

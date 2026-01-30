@@ -1,0 +1,26 @@
+import http from './http'
+
+/**
+* [(${table.describe})] DETAIL
+*/
+export const fetch[(${table.config.prefix})]Detail = (params = {}) => http.post('/api/[(${table.config.catalog})]/[(${table.config.path})]/detail', params)
+
+/**
+* ADD & UPDATE [(${table.describe})]
+*/
+export const fetch[(${table.config.prefix})]Update = (params = {}) => http.post('/api/[(${table.config.catalog})]/[(${table.config.path})]/update', params)
+
+/**
+* [(${table.describe})] PAGING DATA
+*/
+export const fetch[(${table.config.prefix})]Paging = (params = {}) => http.post('/api/[(${table.config.catalog})]/[(${table.config.path})]/paging', params)
+
+/**
+* [(${table.describe})] LIST DATA
+*/
+export const fetch[(${table.config.prefix})]List = (params = {}) => http.post('/api/[(${table.config.catalog})]/[(${table.config.path})]/list', params)
+
+/**
+* DELETE [(${table.describe})]
+*/
+export const fetch[(${table.config.prefix})]Delete = (params = {}) => http.post('/api/[(${table.config.catalog})]/[(${table.config.path})]/delete', params)

@@ -1,0 +1,30 @@
+package [(${config.groupId})].model.module.[(${config.name})].[(${table.config.catalog})].vo;
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
+import [(${config.groupId})].model.vo.BaseVO;
+[# th:each="item,stat: ${table.dbType}"]
+[(${item})]
+[/]
+
+/**
+* [(${table.describe})]
+*/
+@Data
+@Accessors(chain = true)
+@EqualsAndHashCode(callSuper = false)
+@ApiModel(value="[(${table.describe})]", description="[(${table.describe})]")
+public class [(${table.className})]FeignVO extends BaseVO {
+
+[# th:each="item,stat: ${table.children}"]
+    /**
+     * [(${item.describe})]
+     */
+    @ApiModelProperty(value = "[(${item.describe})]")
+    private [(${item.fieldType})] [(${item.javaName})];
+
+[/]
+}

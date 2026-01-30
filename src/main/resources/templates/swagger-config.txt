@@ -1,0 +1,51 @@
+package [(${config.packageName})].config;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import springfox.documentation.builders.ApiInfoBuilder;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Contact;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+/**
+ * Swagger
+ */
+@Configuration
+@EnableSwagger2
+@ConfigurationProperties(prefix = "swagger")
+public class SwaggerConfig {
+
+    private static final String BASE_PACKAGE = "com.[(${config.name})]";
+    @Value("${swagger.enable}")
+    private boolean enableSwagger;
+
+    @Bean
+    public Docket helloDocket() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                //注册整体api信息
+                .apiInfo(apiInfo())
+                //swagger功能是否启用
+                .enable(enableSwagger)
+                .select()
+                //指定扫描的包
+                .apis(RequestHandlerSelectors.basePackage(BASE_PACKAGE))
+                .paths(PathSelectors.ant("/core/api/**"))
+                .build();
+    }
+
+
+    private ApiInfo apiInfo() {
+        return new ApiInfoBuilder().title("公共项目模块")
+                .description("包含数据字典、通用接口封装等")
+                .contact(new Contact("Devin", "", ""))
+                .version("0.0.1")
+                .build();
+    }
+
+}

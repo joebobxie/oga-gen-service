@@ -1,0 +1,68 @@
+package [(${config.groupId})].model.module.[(${config.name})].[(${table.config.catalog})].feign;
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import [(${config.groupId})].model.common.api.ApiRest;
+import [(${config.groupId})].model.common.api.dto.BaseIdDTO;
+import [(${config.groupId})].model.common.api.dto.BaseIdRespDTO;
+import [(${config.groupId})].model.common.api.dto.BaseIdsDTO;
+import [(${config.groupId})].model.common.api.dto.PagingDTO;
+import [(${config.groupId})].model.module.[(${config.name})].[(${table.config.catalog})].dto.request.[(${table.className})]DTO;
+import [(${config.groupId})].model.module.[(${config.name})].[(${table.config.catalog})].dto.response.[(${table.className})]ResDTO;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import java.util.List;
+import javax.annotation.Resource;
+
+/**
+* [(${table.describe})]
+ */
+@Api(tags={"[(${table.describe})]"})
+@RestController
+@RequestMapping("/api/dict/brand")
+public class [(${table.className})]Controller extends BaseController {
+    /**
+     * [(${table.describe})] feign
+     */
+    @Resource
+    [(${table.className})]FeignClient [(${table.lowerClassName})]FeignClient;
+
+    /**
+    * 添加或修改
+    */
+    @ApiOperation(value = "添加或修改")
+    @RequestMapping(value = "/[(${config.name})]/feign/[(${table.config.catalog})]/[(${table.config.path})]/update", method = { RequestMethod.POST})
+    ApiRest<BaseIdRespDTO> [(${table.config.className})]SaveOrUpdate(@RequestBody [(${table.className})]DTO dto);
+
+    /**
+    * 删除
+    */
+    @ApiOperation(value = "删除")
+    @RequestMapping(value = "/[(${config.name})]/feign/[(${table.config.catalog})]/[(${table.config.path})]/delete", method = { RequestMethod.POST})
+    ApiRest [(${table.config.className})]Delete(@RequestBody BaseIdsDTO dto);
+
+    /**
+    * 详情
+    */
+    @ApiOperation(value = "详情")
+    @RequestMapping(value = "/[(${config.name})]/feign/[(${table.config.catalog})]/[(${table.config.path})]/detail", method = { RequestMethod.POST})
+    ApiRest<[(${table.className})]ResDTO> [(${table.config.className})]Detail(@RequestBody BaseIdDTO dto);
+
+    /**
+    * 分页数据
+    */
+    @ApiOperation(value = "分页查找")
+    @RequestMapping(value = "/[(${config.name})]/feign/[(${table.config.catalog})]/[(${table.config.path})]/paging", method = { RequestMethod.POST})
+    ApiRest<IPage<[(${table.className})]ResDTO>> [(${table.config.className})]Paging(@RequestBody PagingDTO<[(${table.className})]DTO> dto);
+
+    /**
+     * 列表数据
+     */
+    @ApiOperation(value = "查找列表")
+    @RequestMapping(value = "/[(${config.name})]/feign/[(${table.config.catalog})]/[(${table.config.path})]/list", method = { RequestMethod.POST})
+    ApiRest<List<[(${table.className})]ResDTO>> [(${table.config.className})]List(@RequestBody [(${table.className})]DTO dto);
+}

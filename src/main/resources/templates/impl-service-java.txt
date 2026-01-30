@@ -1,0 +1,75 @@
+package [(${config.packageName})].module.[(${table.config.catalog})].service.impl;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import [(${config.packageName})].model.dto.BaseIdsDTO;
+import [(${config.packageName})].model.dto.BaseIdDTO;
+import [(${config.packageName})].model.vo.BaseIdVO;
+import [(${config.packageName})].module.[(${table.config.catalog})].entity.[(${table.className})]Entity;
+import [(${config.packageName})].module.[(${table.config.catalog})].dto.[(${table.className})]DTO;
+import [(${config.packageName})].module.[(${table.config.catalog})].vo.[(${table.className})]VO;
+import [(${config.packageName})].module.[(${table.config.catalog})].mapper.[(${table.className})]Mapper;
+import [(${config.packageName})].module.[(${table.config.catalog})].service.[(${table.className})]Service;
+import [(${config.packageName})].model.dto.PagingDTO;
+import [(${config.packageName})].model.vo.PagingVO;
+import [(${config.packageName})].utility.BeanMapper;
+import org.springframework.stereotype.Service;
+import java.util.List;
+
+/**
+* [(${table.describe})]
+*/
+@Service
+public class [(${table.className})]ServiceImpl extends ServiceImpl<[(${table.className})]Mapper, [(${table.className})]Entity> implements [(${table.className})]Service {
+
+    /**
+    * 添加或修改
+    */
+    @Override
+    public BaseIdVO [(${table.config.className})]SaveOrUpdate([(${table.className})]DTO dto) {
+        [(${table.className})]Entity entity = BeanMapper.map(dto, [(${table.className})]Entity.class);
+        this.saveOrUpdate(entity);
+        return new BaseIdVO(entity.getId());
+     }
+
+    /**
+    * 删除
+    */
+    @Override
+    public void [(${table.config.className})]Delete(BaseIdsDTO dto) {
+        this.removeByIds(dto.getIds());
+    }
+
+    /**
+    * 详情
+    */
+    @Override
+    public [(${table.className})]VO [(${table.config.className})]Detail(BaseIdDTO dto) {
+        [(${table.className})]Entity entity = this.getById(dto.getId());
+        return BeanMapper.map(entity, [(${table.className})]VO.class);
+    }
+    /**
+    * 分页查询数据
+    */
+    @Override
+    public PagingVO<[(${table.className})]VO> [(${table.config.className})]Paging(PagingDTO<[(${table.className})]DTO> dto) {
+        Page<[(${table.className})]Entity> query = new Page<>(dto.getCurrent(), dto.getSize());
+        LambdaQueryWrapper<[(${table.className})]Entity> queryWrapper = new LambdaQueryWrapper<>();
+        IPage<[(${table.className})]Entity> pageData = this.page(query, queryWrapper);
+        return JSON.parseObject(JSON.toJSONString(pageData), new TypeReference<PagingVO<[(${table.className})]VO>>(){});
+     }
+
+    /**
+    * 列表数据
+    */
+    @Override
+    public List<[(${table.className})]VO> [(${table.config.className})]List([(${table.className})]DTO dto) {
+        LambdaQueryWrapper<[(${table.className})]Entity> queryWrapper = new LambdaQueryWrapper<>();
+        List<[(${table.className})]Entity> list = this.list(queryWrapper);
+        return BeanMapper.mapList(list, [(${table.className})]VO.class);
+    }
+}

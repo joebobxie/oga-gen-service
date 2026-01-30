@@ -1,0 +1,20 @@
+package [(${config.packageName})].heartbeat;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+/**
+ * 心跳
+ */
+@RestController
+@RequestMapping("/[(${config.name})]/api/heartbeat")
+public class HeartbeatController {
+
+    /**
+     * 心跳
+     */
+    @RequestMapping("**")
+    public String Success() {
+        return "success";
+    }
+}

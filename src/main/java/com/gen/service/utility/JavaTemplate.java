@@ -67,7 +67,7 @@ public class JavaTemplate {
     /**
      * db structure
      */
-    public static final String db_structure = "doc/db_structure.db";
+    public static final String dbHtml = "doc/db.html";
 
     /**
      * mybatis xml

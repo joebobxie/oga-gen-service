@@ -1,0 +1,428 @@
+<template>
+  <fox-layout-main
+    :loading="pageLoading"
+    :offset="200"
+    :percentage="100"
+    google-style
+  >
+    <div class="neighbor fox-google-style percent-100" slot="header">
+      <div class="fox-page-content">
+        <div class="filter-params">
+          <div class="filter-params-element">
+            <fox-input
+              shrink
+              :placeholder="$t('base.placeholder.label')"
+              :description="$t('base.placeholder.search')"
+              v-model="searchConditions.keyword"
+              clearable
+              @clear="clearSearchCondition"
+            >
+              <el-button
+                slot="append"
+                icon="el-icon-search"
+                :loading="loading"
+                @click="getData(false)"
+              ></el-button>
+            </fox-input>
+          </div>
+          <div class="filter-params-element">
+            <el-button
+              icon="el-icon-plus"
+              type="primary"
+              plain
+              class="el-material-button"
+              @click="add[(${table.config.fun})]Drawer"
+            >
+            </el-button>
+          </div>
+          <div class="filter-params-element text-count">
+            <label class="text-secondary mr-2">
+              {{$t('total')}}
+            </label>
+            <label class="text-primary">
+              {{pagingOptions.recordCount}}
+            </label>
+          </div>
+          <div class="filter-params-element">
+          </div>
+        </div>
+      </div>
+    </div>
+    <fox-paging-table
+        :columns="dataConfig.columns"
+        :actions="dataConfig.actions"
+        :dataset="pagingOptions.dataset"
+        :loading="tableOptions.loading"
+        :first-loading="pagingOptions.firstLoading"
+        :empty="dataConfig.empty"
+        :page-index.sync="pagingOptions.pageIndex"
+        :page-size.sync="pagingOptions.pageSize"
+        :record-count="pagingOptions.recordCount"
+        :rows-class-name="dataConfig.rowsClassName"
+        @paging="getData"
+    >
+    </fox-paging-table>
+    <el-drawer
+      :visible.sync="visible"
+      :close-on-press-escape="false"
+      :append-to-body="true"
+      :wrapper-closable="false"
+      size="40%"
+      class="fox-drawer"
+      ref="drawer"
+    >
+      <div slot="title">
+        {{ entity.id ? $t('[(${table.config.catalog})].[(${table.config.i18n})].updateTitle') : $t('[(${table.config.catalog})].[(${table.config.i18n})].addTitle') }}
+      </div>
+      <div class="fox-drawer-container">
+        <fox-form
+          :model="entity"
+          :rules="formRules"
+          ref="[(${table.config.i18n})]Form"
+        >
+          <el-row
+            :gutter="20"
+            class="el-form-item">
+            <el-col :span="12">
+              [# th:each="item,stat: ${table.children}"][# th:if="${item.primary == 0 && stat.index % 2 == 0}"]
+              <fox-form-item prop="[(${item.javaName})]">
+                <fox-input
+                  v-model="entity.[(${item.javaName})]"
+                  shrink
+                  :placeholder="$t('[(${table.config.catalog})].[(${table.config.i18n})].entity.[(${item.javaName})].label')"
+                  :description="$t('[(${table.config.catalog})].[(${table.config.i18n})].entity.[(${item.javaName})].placeholder')"
+                ></fox-input>
+              </fox-form-item>
+              [/][/]
+            </el-col>
+            <el-col :span="12">
+              [# th:each="item,stat: ${table.children}"][# th:if="${item.primary == 0 && stat.index % 2 == 1}"]
+              <fox-form-item prop="[(${item.javaName})]">
+                <fox-input
+                  v-model="entity.[(${item.javaName})]"
+                  shrink
+                  :placeholder="$t('[(${table.config.catalog})].[(${table.config.i18n})].entity.[(${item.javaName})].label')"
+                  :description="$t('[(${table.config.catalog})].[(${table.config.i18n})].entity.[(${item.javaName})].placeholder')"
+                ></fox-input>
+              </fox-form-item>
+              [/][/]
+            </el-col>
+          </el-row>
+        </fox-form>
+        <fox-unsaved
+          :unsaved.sync="unsaved"
+          :loading="loading"
+          offset="60%"
+          @cancel="closeDrawer"
+          @confirmed="formValidation">
+        </fox-unsaved>
+      </div>
+    </el-drawer>
+  </fox-layout-main>
+</template>
+
+<script>
+import extend from '@/plugins/page/unsaved'
+import {
+  fetch[(${table.config.prefix})]Detail,
+  fetch[(${table.config.prefix})]Update,
+  fetch[(${table.config.prefix})]Paging,
+  fetch[(${table.config.prefix})]Delete
+} from '@/plugins/api/[(${table.config.catalog})]'
+
+export default {
+  name: '[(${table.config.prefix})]',
+  extends: extend,
+  data () {
+    return {
+      activeName: 'basic',
+      formName: '[(${table.config.i18n})]Form',
+      visible: false,
+      entity: {
+        [# th:each="item,stat: ${table.children}"][# th:if="${item.primary == 0}"]
+        [(${item.javaName})]: [(${item.defaultValue})][# th:if="${not stat.last}" th:text="','" /][/][/]
+      },
+      formRules: {
+        [# th:each="item,stat: ${table.children}"][# th:if="${item.primary == 0}"]
+        [(${item.javaName})]: [
+          {
+            required: true,
+            message: this.$t('[(${table.config.catalog})].[(${table.config.i18n})].entity.[(${item.javaName})].required'),
+            trigger: 'blur'
+          }
+        ][# th:if="${not stat.last}" th:text="','" /][/][/]
+      },
+      dataConfig: {
+        actions: {
+          rowClick: (row, column) => {
+            this.columnEvents(row, column)
+          },
+          delete: {
+            icon: 'el-icon-delete',
+            label: this.$t('base.delete.button'),
+            onClick: (rows) => {
+              this.delete[(${table.config.fun})](rows)
+            }
+          }
+        },
+        columns: [[# th:each="item,stat: ${table.children}"]
+          [# th:if="${item.primary == 0}"]{
+            prop: '[# th:text="${item.javaName}" /]',
+            label: this.$t('[(${table.config.catalog})].[(${table.config.i18n})].tableHeader.[# th:text="${item.javaName}" /]')
+          }[# th:if="${not stat.last}" th:text="','" /][/]
+        [/]],
+        /**
+         * Data is empty
+         */
+        empty: {
+          content: this.$t('[(${table.config.catalog})].[(${table.config.i18n})].empty.content'),
+          buttonLabel: this.$t('[(${table.config.catalog})].[(${table.config.i18n})].empty.buttonLabel'),
+          onClick: () => {
+            this.add[(${table.config.fun})]Drawer()
+          }
+        },
+        /**
+         * Row Highlight Class
+         * @param row Row data
+         */
+        rowsClassName: (row) => {
+          // return row.state === 0 ? 'row-text-enable' : ''
+          return ''
+        }
+      },
+      searchConditions: {
+        ...this.searchConditions
+      }
+    }
+  },
+  watch: {
+    searchConditions: {
+      deep: true,
+      handler () {
+        this.getData(true)
+      }
+    },
+    entity: {
+      deep: true,
+      handler () {
+        this.unsaved = true
+      }
+    }
+  },
+  created () {
+    this.modelCache(this.entity)
+    this.pagingCache((success) => {
+      this.getData(success)
+    })
+  },
+  methods: {
+    /**
+     * Row click event
+     * @param row       Row data
+     * @param column    Column data
+     */
+    columnEvents (row, column) {
+      this.update[(${table.config.fun})]Drawer(row)
+    },
+    /**
+     * Close Drawer
+     */
+    closeDrawer () {
+      this.$refs.drawer.close()
+      this.visible = false
+    },
+    /**
+     * Clear Search Condition
+     */
+    clearSearchCondition () {
+      this.clearCondition(() => {
+        this.getData(true)
+      })
+    },
+    /**
+     * Paging data
+     * @param first First Load
+     */
+    getData (first) {
+      this.tableOptions.loading = true
+      this.pagingOptions.firstLoading = first
+      fetch[(${table.config.prefix})]Paging({
+        current: this.pagingOptions.pageIndex,
+        size: this.pagingOptions.pageSize,
+        params: {}
+      })
+        .then(result => {
+          this.pageValid()
+          this.resultMessage(result, (success) => {
+            if (success) {
+              this.pagingOptions.recordCount = result.data.total
+              this.pagingOptions.dataset = result.data['records']
+              this.tableOptions.loading = false
+              if (result.data.records.length > 0) {
+                this.pagingOptions.firstLoading = !first
+              }
+            }
+          })
+        })
+        .catch(error => {
+          this.pageInvalid()
+          this.networkMistake(error)
+        })
+    },
+    /**
+     * Add Drawer
+     */
+    add[(${table.config.fun})]Drawer () {
+      this.visible = true
+      this.$nextTick(() => {
+        this.resetForm(this.formName)
+        this.modelCache(null, (model) => {
+          this.entity = model
+        })
+        this.unsaved = false
+        this.activeName = 'basic'
+      })
+    },
+    /**
+     * Edit Drawer
+     */
+    update[(${table.config.fun})]Drawer (row) {
+      this.getDetail(row.id)
+    },
+    /**
+     * Close Drawer
+     */
+    close[(${table.config.fun})]Drawer () {
+      this.unsaved = false
+      this.visible = false
+      this.getData(true)
+    },
+    /**
+     * Form Validation
+     */
+    formValidation () {
+      this.formValidate(this.formName, (valid, fields) => {
+        if (valid) {
+          this.loading = true
+          if (this.id) {
+            this.update[(${table.config.fun})]()
+          } else {
+            this.add[(${table.config.fun})]()
+          }
+        } else {
+          this.unverified(fields)
+        }
+      })
+    },
+    /**
+     * GET DETAIL DATE
+     */
+    getDetail (id) {
+      fetch[(${table.config.prefix})]Detail({ id })
+        .then((result) => {
+          this.pageValid()
+          this.resultMessage((result), (success) => {
+            if (success) {
+              this.visible = true
+              this.resetForm(this.formName)
+              this.entity = result.data
+              this.$nextTick(() => {
+                this.unsaved = false
+                this.activeName = 'basic'
+              })
+            }
+          })
+        })
+        .catch(error => {
+          this.pageInvalid(error)
+        })
+    },
+    /**
+     * ADD
+     */
+    add[(${table.config.fun})] () {
+      fetch[(${table.config.prefix})]Update(this.entity)
+        .then((result) => {
+          result.options = {
+            action: this.actionType.addition,
+            formName: 'update'
+          }
+          this.resultMessage(result, (success) => {
+            if (success) {
+              this.close[(${table.config.fun})]Drawer()
+            }
+          })
+        })
+        .catch(error => {
+          this.networkMistake(error)
+        })
+    },
+    /**
+     * UPDATE
+     */
+    update[(${table.config.fun})] () {
+      fetch[(${table.config.prefix})]Update(this.entity)
+        .then((result) => {
+          result.options = {
+            formName: 'update',
+            action: this.actionType.update
+          }
+          this.resultMessage(result, (success) => {
+            if (success) {
+              this.close[(${table.config.fun})]Drawer()
+            }
+          })
+        })
+        .catch(error => {
+          this.networkMistake(error)
+        })
+    },
+    /**
+     * DELETE
+     */
+    delete[(${table.config.fun})] (rows) {
+      const ids = []
+      rows.forEach((o) => {
+        ids.push(o.id)
+      })
+      this.$confirm(this.$t('base.delete.multiple').toString().replace('{0}', ids.length.toString()),
+        this.$t('base.delete.heading').toString(), {
+          confirmButtonText: this.$t('base.operate.confirm'),
+          cancelButtonText: this.$t('base.operate.cancel'),
+          closeOnClickModal: false,
+          type: 'error',
+          beforeClose: (action, instance, done) => {
+            if (action === 'confirm') {
+              fetch[(${table.config.prefix})]Delete({
+                ids: ids
+              })
+                .then(result => {
+                  result.options = {
+                    action: this.actionType.delete
+                  }
+                  this.resultMessage(result, (success) => {
+                    done()
+                    instance.confirmButtonLoading = false
+                    if (success) {
+                      this.getData(true)
+                    }
+                  })
+                })
+                .catch(error => {
+                  this.networkMistake(error)
+                  done()
+                  instance.confirmButtonLoading = false
+                })
+            } else {
+              instance.confirmButtonLoading = false
+              done()
+            }
+          }
+        })
+    }
+  }
+}
+</script>
+
+<style lang="scss">
+</style>

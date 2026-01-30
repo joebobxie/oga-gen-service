@@ -1,0 +1,42 @@
+package [(${config.packageName})].module.[(${table.config.catalog})].service;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+import [(${config.packageName})].model.dto.PagingDTO;
+import [(${config.packageName})].model.vo.PagingVO;
+import [(${config.packageName})].model.dto.BaseIdsDTO;
+import [(${config.packageName})].model.dto.BaseIdDTO;
+import [(${config.packageName})].model.vo.BaseIdVO;
+import [(${config.packageName})].module.[(${table.config.catalog})].entity.[(${table.className})]Entity;
+import [(${config.packageName})].module.[(${table.config.catalog})].dto.[(${table.className})]DTO;
+import [(${config.packageName})].module.[(${table.config.catalog})].vo.[(${table.className})]VO;
+import java.util.List;
+
+/**
+* [(${table.describe})]
+*/
+public interface [(${table.className})]Service extends IService<[(${table.className})]Entity> {
+    /**
+    * 添加或修改
+    */
+    BaseIdVO [(${table.config.className})]SaveOrUpdate([(${table.className})]DTO dto);
+
+    /**
+    * 删除
+    */
+    void [(${table.config.className})]Delete(BaseIdsDTO dto);
+
+    /**
+    * 分页查询数据
+    */
+    PagingVO<[(${table.className})]VO> [(${table.config.className})]Paging(PagingDTO<[(${table.className})]DTO> dto);
+
+    /**
+    * 详情
+    */
+    [(${table.className})]VO [(${table.config.className})]Detail(BaseIdDTO dto);
+
+    /**
+    * 列表数据
+    */
+    List<[(${table.className})]VO> [(${table.config.className})]List([(${table.className})]DTO dto);
+}

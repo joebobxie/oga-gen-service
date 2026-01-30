@@ -1,6 +1,6 @@
 export default {
-  [(${table.vueConfig.catalog})]: {
-    [(${table.vueConfig.i18n})]: {
+  [(${table.config.catalog})]: {
+    [(${table.config.i18n})]: {
       title: '[(${table.describe})]',
       add: 'Add [(${table.describe})]',
       edit: 'Edit [(${table.describe})]',

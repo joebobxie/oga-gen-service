@@ -1,0 +1,60 @@
+import http from './http'
+
+/**
+ * 数据源
+ */
+export default {
+  base: {
+    development: {
+      url: '[(${config.devAPI})]'
+    },
+    test: {
+      url: '[(${config.testAPI})]'
+    },
+    stage: {
+      url: '[(${config.stageAPI})]'
+    },
+    production: {
+      url: '[(${config.prodAPI})]'
+    }
+  },
+  /**
+   * HTTP POST请求
+   * @param route
+   * @param data
+   * @returns {*}
+   */
+  get (route, data) {
+    return http.post(this.base[process.env.NODE_ENV].url + route, data || {})
+  },
+  /**
+   * 上传API地址
+   */
+  upload () {
+    return this.base[process.env.NODE_ENV].url + '/common/api/oss/upload'
+  },
+  /**
+   * [(${table.describe})]详情
+   */
+  [(${table.config.prefix})]Detail (data) {
+    return this.get('[(${table.config.router})]/detail', data)
+  },
+  /**
+   * 添加 & 修改[(${table.describe})]
+   */
+  [(${table.config.prefix})]Update (data) {
+    return this.get('[(${table.config.router})]/update', data)
+  },
+  /**
+   * [(${table.describe})]分页数据
+   */
+  [(${table.config.prefix})]Paging (data) {
+    return this.get('[(${table.config.router})]/paging', data)
+  },
+  /**
+   * 删除[(${table.describe})]
+   */
+  [(${table.config.prefix})]Delete (data) {
+    return this.get('[(${table.config.router})]/delete', data)
+  }
+}

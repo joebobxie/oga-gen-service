@@ -1,0 +1,7 @@
+# [(${table.describe})]
+> [(${table.name})]
+
+字段 | 类型 | 说明
+---|---|---[# th:each="item,stat: ${table.children}"]
+[(${item.javaName})] | [(${item.columnType})] | [(${item.describe})]
+[/]

@@ -1,0 +1,43 @@
+-- INSERT
+INSERT INTO [(${table.name})]
+(
+[# th:each="item,stat: ${table.children}"]`[(${item.name})]`[# th:if="${not stat.last}" th:text="','" /][/]
+)
+SELECT
+[# th:each="item,stat: ${table.children}"]`[(${item.name})]` [# th:if="${not stat.last}" th:text="','" /][/]
+FROM `fo-site`.[(${table.name})]
+
+
+-- INSERT
+INSERT INTO [(${table.name})]
+(
+[# th:each="item,stat: ${table.children}"]
+  `[(${item.name})]`[# th:if="${not stat.last}" th:text="','" /]
+[/]
+)
+VALUES(
+[# th:each="item,stat: ${table.children}"]
+  #{[(${item.javaName})]}[# th:if="${not stat.last}" th:text="','" /]
+[/]
+);
+
+
+-- UPDATE
+UPDATE [(${table.name})]
+SET
+[# th:each="item,stat: ${table.children}"]
+  `[(${item.name})]` = #{[(${item.javaName})]} [# th:if="${not stat.last}" th:text="','" /]
+[/]
+WHERE 1 = 1
+
+-- SELECT
+SELECT
+[# th:each="item,stat: ${table.children}"]
+  `[(${item.name})]` [# th:if="${not stat.last}" th:text="','" /]
+[/]
+FROM [(${table.name})]
+WHERE 1 = 1
+
+-- DELETE
+DELETE FROM [(${table.name})]
+WHERE 1 = 1
