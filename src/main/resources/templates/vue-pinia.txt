@@ -5,16 +5,19 @@ import { defineStore } from "pinia";
  */
 export interface [# th:text="${table.className}" /]State {
 [# th:each="item, stat: ${table.children}"]
-  [# th:text="${item.javaName}" /]: string;
+  [# th:text="${item.javaName}" /]: [# th:text="${item.tsType}" /];
 [/]
 }
 
+/**
+ * [(${table.describe})]
+ */
 export const use[# th:text="${table.className}" /]Store = defineStore("[# th:text="${table.lowerClassName}" /]Store", {
   persist: true,
   state: () => {
     return {
     [# th:each="item, stat: ${table.children}"]
-      [# th:text="${item.javaName}" /]: [# th:utext="${item.defaultValue}" /],
+      [# th:text="${item.javaName}" /]: [# th:utext="${item.tsDefaultValue}" /],
     [/]
     };
   },

@@ -18,6 +18,7 @@ import [(${config.packageName})].model.dto.PagingDTO;
 import [(${config.packageName})].model.vo.PagingVO;
 import [(${config.packageName})].utility.BeanMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
@@ -27,9 +28,10 @@ import java.util.List;
 public class [(${table.className})]ServiceImpl extends ServiceImpl<[(${table.className})]Mapper, [(${table.className})]Entity> implements [(${table.className})]Service {
 
     /**
-    * 添加或修改
+    * SAVE OR UPDATE
     */
     @Override
+    @Transactional
     public BaseIdVO [(${table.config.className})]SaveOrUpdate([(${table.className})]DTO dto) {
         [(${table.className})]Entity entity = BeanMapper.map(dto, [(${table.className})]Entity.class);
         this.saveOrUpdate(entity);
@@ -37,7 +39,7 @@ public class [(${table.className})]ServiceImpl extends ServiceImpl<[(${table.cla
      }
 
     /**
-    * 删除
+    * DELETE
     */
     @Override
     public void [(${table.config.className})]Delete(BaseIdsDTO dto) {
@@ -45,7 +47,7 @@ public class [(${table.className})]ServiceImpl extends ServiceImpl<[(${table.cla
     }
 
     /**
-    * 详情
+    * DETAIL DATA
     */
     @Override
     public [(${table.className})]VO [(${table.config.className})]Detail(BaseIdDTO dto) {
@@ -53,7 +55,7 @@ public class [(${table.className})]ServiceImpl extends ServiceImpl<[(${table.cla
         return BeanMapper.map(entity, [(${table.className})]VO.class);
     }
     /**
-    * 分页查询数据
+    * PAGING DATA
     */
     @Override
     public PagingVO<[(${table.className})]VO> [(${table.config.className})]Paging(PagingDTO<[(${table.className})]DTO> dto) {
@@ -64,7 +66,7 @@ public class [(${table.className})]ServiceImpl extends ServiceImpl<[(${table.cla
      }
 
     /**
-    * 列表数据
+    * LIST DATA
     */
     @Override
     public List<[(${table.className})]VO> [(${table.config.className})]List([(${table.className})]DTO dto) {

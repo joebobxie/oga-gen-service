@@ -144,7 +144,8 @@ public class DBServiceImpl implements DBService {
                             }
                             filed.setFieldType(filedTypeVO.getName())
                                     .setDefaultValue(filedTypeVO.getValue())
-                                    //.setLabel(String.format("%s(%s)", filed.getName(), filed.getColumnType()))
+                                    .setTsDefaultValue(filedTypeVO.getTsDefaultValue())
+                                    .setTsType(filedTypeVO.getTsType())
                                     .setIsLeaf(false);
 
                             fields.add(filed);
@@ -231,6 +232,8 @@ public class DBServiceImpl implements DBService {
             case "blob":
                 filedTypeVO.setName("byte[]");
                 filedTypeVO.setValue("0");
+                filedTypeVO.setTsType("string");
+                filedTypeVO.setTsDefaultValue("");
                 break;
             case "tinyint":
             case "int":
@@ -238,28 +241,40 @@ public class DBServiceImpl implements DBService {
             case "mediumint":
                 filedTypeVO.setName("Integer");
                 filedTypeVO.setValue("0");
+                filedTypeVO.setTsType("number");
+                filedTypeVO.setTsDefaultValue("0");
                 break;
             case "bit":
                 filedTypeVO.setName("Boolean");
                 filedTypeVO.setValue("0");
+                filedTypeVO.setTsType("boolean");
+                filedTypeVO.setTsDefaultValue("false");
                 break;
             case "float":
                 filedTypeVO.setName("Float");
                 filedTypeVO.setValue("0");
+                filedTypeVO.setTsType("number");
+                filedTypeVO.setTsDefaultValue("0");
                 break;
             case "double":
                 filedTypeVO.setName("Double");
                 filedTypeVO.setValue("0");
+                filedTypeVO.setTsType("number");
+                filedTypeVO.setTsDefaultValue("0");
                 break;
             case "decimal":
                 filedTypeVO.setName("BigDecimal");
                 filedTypeVO.setValue("0");
                 filedTypeVO.setDbType("import java.math.BigDecimal;");
+                filedTypeVO.setTsType("number");
+                filedTypeVO.setTsDefaultValue("0");
                 break;
             case "bigint":
             case "id":
                 filedTypeVO.setName("Long");
                 filedTypeVO.setValue("0");
+                filedTypeVO.setTsType("bigint");
+                filedTypeVO.setTsDefaultValue("0");
                 break;
             case "date":
             case "time":
@@ -269,6 +284,8 @@ public class DBServiceImpl implements DBService {
                 filedTypeVO.setName("Date");
                 filedTypeVO.setValue("new Date()");
                 filedTypeVO.setDbType("import java.util.Date;");
+                filedTypeVO.setTsType("Date");
+                filedTypeVO.setTsDefaultValue("new Date()");
                 break;
             case "longtext":
             case "varchar":
@@ -278,6 +295,8 @@ public class DBServiceImpl implements DBService {
             default:
                 filedTypeVO.setName("String");
                 filedTypeVO.setValue("''");
+                filedTypeVO.setTsType("string");
+                filedTypeVO.setTsDefaultValue("''");
                 break;
         }
         return filedTypeVO;

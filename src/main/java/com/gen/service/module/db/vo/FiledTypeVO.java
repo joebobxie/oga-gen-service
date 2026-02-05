@@ -34,4 +34,16 @@ public class FiledTypeVO extends BaseVO {
      */
     @ApiModelProperty(value = "DB Type")
     String dbType;
+
+    /**
+     * TypeScript Type
+     */
+    @ApiModelProperty(value = "TypeScript Type")
+    String tsType;
+
+    /**
+     * TypeScript Default Value
+     */
+    @ApiModelProperty(value = "TypeScript Default Value")
+    String tsDefaultValue;
 }

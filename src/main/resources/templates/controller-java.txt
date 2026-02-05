@@ -31,26 +31,26 @@ import java.util.List;
 public class [(${table.className})]ApiController extends BaseController {
 
     /**
-    * [(${table.describe})]服务
+    * [(${table.describe})] SERVICE
     */
     @Resource
     [(${table.className})]Service baseService;
 
     /**
-    * 添加或修改
+    * SAVE & UPDATE
     */
     @MerchantInject
-    @ApiOperation(value = "添加或修改")
+    @ApiOperation(value = "SAVE & UPDATE")
     @RequestMapping(value = "/update", method = { RequestMethod.POST})
     public ApiRest<BaseIdVO> [(${table.config.className})]SaveOrUpdate(@RequestBody [(${table.className})]DTO dto) {
         return super.success(baseService.[(${table.config.className})]SaveOrUpdate(dto));
     }
 
     /**
-    * 删除
+    * DELETE
     */
     @MerchantInject
-    @ApiOperation(value = "删除")
+    @ApiOperation(value = "DELETE")
     @RequestMapping(value = "/delete", method = { RequestMethod.POST})
     public ApiRest<BaseVO> [(${table.config.className})]Delete(@RequestBody BaseIdsDTO dto) {
         baseService.[(${table.config.className})]Delete(dto);
@@ -58,30 +58,30 @@ public class [(${table.className})]ApiController extends BaseController {
     }
 
     /**
-    * 详情
+    * DETAIL
     */
     @MerchantInject
-    @ApiOperation(value = "详情")
+    @ApiOperation(value = "DETAIL")
     @RequestMapping(value = "/detail", method = { RequestMethod.POST})
     public ApiRest<[(${table.className})]VO> [(${table.config.className})]Detail(@RequestBody BaseIdDTO dto) {
         return super.success(baseService.[(${table.config.className})]Detail(dto));
     }
 
     /**
-    * 分页数据
+    * PAGING DATA
     */
     @MerchantInject
-    @ApiOperation(value = "分页查找")
+    @ApiOperation(value = "PAGING DATA")
     @RequestMapping(value = "/paging", method = { RequestMethod.POST})
     public ApiRest<PagingVO<[(${table.className})]VO>> [(${table.config.className})]Paging(@RequestBody PagingDTO<[(${table.className})]DTO> dto) {
         return super.success(baseService.[(${table.config.className})]Paging(dto));
     }
 
     /**
-     * 列表数据
+     * LIST DATA
     */
     @MerchantInject
-    @ApiOperation(value = "查找列表")
+    @ApiOperation(value = "LIST DATA")
     @RequestMapping(value = "/list", method = { RequestMethod.POST})
     public ApiRest<List<[(${table.className})]VO>> [(${table.config.className})]List(@RequestBody [(${table.className})]DTO dto) {
         return super.success(baseService.[(${table.config.className})]List(dto));

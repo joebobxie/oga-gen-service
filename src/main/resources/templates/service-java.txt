@@ -15,28 +15,29 @@ import java.util.List;
 * [(${table.describe})]
 */
 public interface [(${table.className})]Service extends IService<[(${table.className})]Entity> {
+
     /**
-    * 添加或修改
+    * SAVE OR UPDATE
     */
     BaseIdVO [(${table.config.className})]SaveOrUpdate([(${table.className})]DTO dto);
 
     /**
-    * 删除
+    * DELETE
     */
     void [(${table.config.className})]Delete(BaseIdsDTO dto);
 
     /**
-    * 分页查询数据
+    * PAGING DATA
     */
     PagingVO<[(${table.className})]VO> [(${table.config.className})]Paging(PagingDTO<[(${table.className})]DTO> dto);
 
     /**
-    * 详情
+    * DETAIL DATA
     */
     [(${table.className})]VO [(${table.config.className})]Detail(BaseIdDTO dto);
 
     /**
-    * 列表数据
+    * LIST DATA
     */
     List<[(${table.className})]VO> [(${table.config.className})]List([(${table.className})]DTO dto);
 }

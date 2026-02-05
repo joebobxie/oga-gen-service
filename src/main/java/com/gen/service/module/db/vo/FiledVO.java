@@ -102,5 +102,15 @@ public class FiledVO extends BaseVO {
     @ApiModelProperty(value = "Filed Size")
     private Long size;
 
+    /**
+     * TypeScript Type
+     */
+    @ApiModelProperty(value = "TypeScript Type")
+    private String tsType;
 
+    /**
+     * TypeScript Default Value
+     */
+    @ApiModelProperty(value = "TypeScript Default Value")
+    private String tsDefaultValue;
 }
