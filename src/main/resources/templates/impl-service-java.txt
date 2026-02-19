@@ -54,6 +54,7 @@ public class [(${table.className})]ServiceImpl extends ServiceImpl<[(${table.cla
         [(${table.className})]Entity entity = this.getById(dto.getId());
         return BeanMapper.map(entity, [(${table.className})]VO.class);
     }
+
     /**
     * PAGING DATA
     */
